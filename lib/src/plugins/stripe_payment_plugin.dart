@@ -5,6 +5,7 @@
 // ignore_for_file: unused_field, unused_element
 
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe_sdk;
+import 'package:logging/logging.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -24,6 +25,8 @@ import '../core/core.dart'
 // Stripe requires a backend to create PaymentIntents securely
 // This implementation assumes you have a backend endpoint
 class StripePaymentPlugin implements PaymentProviderPlugin {
+  final Logger _logger = Logger('StripePaymentPlugin');
+
   @override
   PaymentProvider get provider => PaymentProvider.stripe;
 
@@ -54,12 +57,12 @@ class StripePaymentPlugin implements PaymentProviderPlugin {
       try {
         stripe_sdk.Stripe.publishableKey = _publishableKey!;
         await stripe_sdk.Stripe.instance.applySettings();
-        print('Stripe SDK initialized successfully with key: ${_publishableKey!.substring(0, 8)}...');
+        _logger.info('Stripe SDK initialized successfully with key: ${_publishableKey!.substring(0, 8)}...');
       } catch (e) {
         // In unit tests or environments without Flutter binding,
         // we can continue without complete SDK initialization
         if (e.toString().contains('Binding has not yet been initialized')) {
-          print('Stripe SDK partial initialization (Flutter binding not available)');
+          _logger.info('Stripe SDK partial initialization (Flutter binding not available)');
         } else {
           throw PaymentInitializationException(
             message: 'Failed to setup Stripe SDK: $e',
@@ -125,7 +128,7 @@ class StripePaymentPlugin implements PaymentProviderPlugin {
         metadata: metadata,
       );
     } catch (e, stackTrace) {
-      print('Error creating PaymentIntent: $e\n$stackTrace');
+      _logger.severe('Error creating PaymentIntent: $e\n$stackTrace');
       throw PaymentProcessingException(
         message: 'Failed to create PaymentIntent: $e',
         provider: provider,
@@ -197,7 +200,7 @@ class StripePaymentPlugin implements PaymentProviderPlugin {
         );
       }
     } catch (e) {
-      print('Error confirming payment: $e');
+      _logger.severe('Error confirming payment: $e');
       return PaymentResult(
         paymentId: paymentIntentClientSecret.split('_secret_')[0],
         status: PaymentStatus.failed,
@@ -225,7 +228,7 @@ class StripePaymentPlugin implements PaymentProviderPlugin {
           final data = json.decode(response.body);
           return _convertStripeStatus(data['status'] as String);
         } else {
-          print('Backend error fetching status: ${response.body}');
+          _logger.warning('Backend error fetching status: ${response.body}');
           return PaymentStatus.failed;
         }
       } else {
@@ -249,7 +252,7 @@ class StripePaymentPlugin implements PaymentProviderPlugin {
         }
       }
     } catch (e) {
-      print('Error fetching payment status: $e');
+      _logger.severe('Error fetching payment status: $e');
       return PaymentStatus.failed;
     }
   }
@@ -433,7 +436,7 @@ class StripePaymentPlugin implements PaymentProviderPlugin {
   @override
   Future<void> dispose() async {
     _isInitialized = false;
-    print('Stripe plugin disposed');
+    _logger.info('Stripe plugin disposed');
   }
 
   void _ensureInitialized() {

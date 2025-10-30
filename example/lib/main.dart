@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_unified_payment/flutter_unified_payment.dart';
@@ -71,69 +72,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> initialize() async {
-    // Exemple 1: Utilisation avec Stripe
-    print('=== EXEMPLE STRIPE ===');
-    final stripeClient = PaymentClient(provider: PaymentProvider.stripe);
+    final PaymentClient client = PaymentClient(
+      provider: PaymentProvider.cinetpay,
+    );
 
     try {
-      await stripeClient.initialize(
-        publicKey: 'pk_test_xxxxx',
-        secretKey: 'sk_test_xxxxx',
-      );
-
-      final paymentIntent = await stripeClient.createPaymentIntent(
-        amount: PaymentAmount(amountInCents: 5000, currency: 'USD'),
-        customerId: 'cus_123',
-        metadata: {'order_id': '12345'},
-      );
-
-      print('PaymentIntent créé: ${paymentIntent.id}');
-
-      final result = await stripeClient.confirmPayment(
-        paymentIntentClientSecret: paymentIntent.clientSecret,
-      );
-
-      if (result.isSuccessful) {
-        print('Paiement réussi: ${result.paymentId}');
-      } else {
-        print('Paiement échoué: ${result.errorMessage}');
-      }
+      await client.initialize(publicKey: 'publicKey');
     } catch (e) {
-      print('Erreur: $e');
+      log('Initialization error: ${e.toString()}');
     }
-
-    print('\n=== EXEMPLE FLOOZ ===');
-    // Test des nouveaux providers
-    final floozClient = PaymentClient(provider: PaymentProvider.flooz);
-
-    await floozClient.initialize(publicKey: 'flooz_public_key');
-
-    final floozIntent = await floozClient.createPaymentIntent(
-      amount: PaymentAmount(amountInCents: 5000, currency: 'XOF'),
-      customerId: 'cus_789',
-    );
-
-    print('Flooz PaymentIntent: ${floozIntent.id}');
-
-    print('\n=== EXEMPLE MIXX BY YAS ===');
-    final mixxClient = PaymentClient(provider: PaymentProvider.mixxByYas);
-
-    await mixxClient.initialize(publicKey: 'mixx_public_key');
-
-    final mixxIntent = await mixxClient.createPaymentIntent(
-      amount: PaymentAmount(amountInCents: 3000, currency: 'XOF'),
-      customerId: 'cus_999',
-    );
-
-    print('Mixx by Yas PaymentIntent: ${mixxIntent.id}');
-
-    // Exemple 3: Vérifier les capacités du provider
-    print('\n=== MÉTADONNÉES PROVIDERS ===');
-    print('Stripe supporte 3DS: ${PaymentProvider.stripe.supports3DS}');
-    print('Flooz supporte 3DS: ${PaymentProvider.flooz.supports3DS}');
-    print('PayPal nom: ${PaymentProvider.paypal.displayName}');
-    print('Flooz nom: ${PaymentProvider.flooz.displayName}');
-    print('Semoa nom: ${PaymentProvider.semoa.displayName}');
   }
 
   @override

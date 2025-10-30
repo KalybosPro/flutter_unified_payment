@@ -6,6 +6,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:logging/logging.dart';
 
 import '../core/core.dart'
     show
@@ -21,6 +22,8 @@ import '../core/core.dart'
         PaymentException;
 
 class CinetPayPaymentPlugin implements PaymentProviderPlugin {
+  final Logger _logger = Logger('CinetPayPaymentPlugin');
+
   @override
   PaymentProvider get provider => PaymentProvider.cinetpay;
 
@@ -60,7 +63,7 @@ class CinetPayPaymentPlugin implements PaymentProviderPlugin {
       }
 
       _isInitialized = true;
-      print('CinetPay initialized successfully with mode: ${_useSandbox ? 'sandbox' : 'production'}');
+      _logger.info('CinetPay initialized successfully with mode: ${_useSandbox ? 'sandbox' : 'production'}');
     } catch (e) {
       throw PaymentInitializationException(
         message: 'Failed to initialize CinetPay: $e',
