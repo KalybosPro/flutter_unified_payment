@@ -12,6 +12,10 @@ enum PaymentProvider {
   paygate,
   cinetpay,
   semoa,
+  bizao,
+  fedapay,
+  paystack,
+  klarna,
 }
 
 // Extension for provider metadata
@@ -59,6 +63,14 @@ extension PaymentProviderMetadata on PaymentProvider {
         return 'CinetPay';
       case PaymentProvider.semoa:
         return 'Semoa';
+      case PaymentProvider.bizao:
+        return 'Bizao';
+      case PaymentProvider.fedapay:
+        return 'FedaPay';
+      case PaymentProvider.paystack:
+        return 'PayStack';
+      case PaymentProvider.klarna:
+        return 'Klarna';
     }
   }
 }

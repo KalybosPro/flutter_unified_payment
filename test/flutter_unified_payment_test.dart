@@ -55,6 +55,15 @@ void main() {
       expect(client.currentProvider, PaymentProvider.semoa);
     });
 
+    test('PaymentClient initializes with Wave', () async {
+      final client = PaymentClient(provider: PaymentProvider.wave);
+      await client.initialize(
+        publicKey: 'wave_client_id_test',
+        secretKey: 'wave_client_secret_test',
+      );
+      expect(client.currentProvider, PaymentProvider.wave);
+    });
+
     test('PaymentClient Stripe backend URL requirement', () async {
       final client = PaymentClient(provider: PaymentProvider.stripe);
       await client.initialize(
@@ -220,6 +229,7 @@ void main() {
         {'plugin': SemoaPaymentPlugin(), 'name': 'Semoa'},
         {'plugin': FlutterwavePaymentPlugin(), 'name': 'Flutterwave'},
         {'plugin': StripePaymentPlugin(), 'name': 'Stripe'},
+        {'plugin': WavePaymentPlugin(), 'name': 'Wave'},
       ];
 
       for (final pluginMap in plugins) {
@@ -242,6 +252,11 @@ void main() {
             await plugin.initialize(
               publicKey: 'cinet_api_key_test',
               additionalConfig: {'siteId': '123456'}
+            );
+          } else if (name == 'Wave') {
+            await plugin.initialize(
+              publicKey: 'wave_client_id_test',
+              secretKey: 'wave_client_secret_test',
             );
           } else {
             await plugin.initialize(publicKey: '${name.toLowerCase()}_test_key');

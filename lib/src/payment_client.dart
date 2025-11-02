@@ -20,6 +20,12 @@ class PaymentClient {
         return StripePaymentPlugin();
       case core.PaymentProvider.flutterwave:
         return FlutterwavePaymentPlugin();
+      case core.PaymentProvider.wave:
+        return WavePaymentPlugin();
+      case core.PaymentProvider.mtnMomo:
+        return MtnPaymentPlugin();
+      case core.PaymentProvider.orangeMoney:
+        return OrangeMoneyPaymentPlugin();
       case core.PaymentProvider.flooz:
         return FloozPaymentPlugin();
       case core.PaymentProvider.mixxByYas:
@@ -30,6 +36,14 @@ class PaymentClient {
         return CinetPayPaymentPlugin();
       case core.PaymentProvider.semoa:
         return SemoaPaymentPlugin();
+      case core.PaymentProvider.bizao:
+        return BizaoPaymentPlugin();
+      case core.PaymentProvider.fedapay:
+        return FedaPayPaymentPlugin();
+      case core.PaymentProvider.paystack:
+        return PayStackPaymentPlugin();
+      case core.PaymentProvider.klarna:
+        return KlarnaPaymentPlugin();
       default:
         throw UnimplementedError('Provider ${provider.displayName} not implemented');
     }
